@@ -4,64 +4,124 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gorilla/mux"
+    "github.com/go-chi/chi/v5"
+    "github.com/go-chi/chi/v5/middleware"
 )
 
 func main() {
 
-    //example of simple http router, fased out in favor of gorilla mux
-	//http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		//fmt.Fprintf(w, "Hello World!")
-	//})
-	//http.ListenAndServe(":8000", nil)
 
+//Creation of the router:
+    //r main router for VSCP web application
+    r := chi.NewRouter()
+    //logging enables as a middleware
+    r.Use(middleware.Logger)
+    //a middleware to check if the server is alive
+    r.Use(middleware.Heartbeat("/ping"))
+    //a profiler to check healt of server
+    r.Mount("/debug", middleware.Profiler())
+    //recover from panics and send a 500 internal error
+    r.Use(middleware.Recoverer)
+    //personalized 404
+    r.NotFound(genericHandler404)
+    //personalized 405
+    r.MethodNotAllowed(genericHandler405)
 
+//example:
+    //example of a get function and its handler
+    r.Get("/example/{first}/{second:[0-9]+}", exampleHandler)
 
-    r := mux.NewRouter()
-    r.HandleFunc("/example/{first}/{second:[0-9]+}", exampleHandler)
-    //r.HandleFunc("/", )
-    //r.HandleFunc("/access", )
-    //r.HandleFunc("/stats", )
-    //r.HandleFunc("/topology", )
-    //r.HandleFunc("/health", )
-    //r.HandleFunc("/free", )//probably do this with server side or sockets
-    //r.HandleFunc("/flowdel", )//this is an external request
-    //r.HandleFunc("/mpstat", )
-    //r.HandleFunc("/ifstat", )
-    //r.HandleFunc("/showtemp", )
-    //r.HandleFunc("/gettopo", )
-    //r.HandleFunc("/net", )
-    //r.HandleFunc("/rpiping", )//workerping
-    //r.HandleFunc("/nodes", )
-    //r.HandleFunc("/statusnodes", )
-    //r.HandleFunc("/intfs", )
-    //r.HandleFunc("/iperf", )
-    //r.HandleFunc("/pingall", )
-    //r.HandleFunc("/placement", )
-    //r.HandleFunc("/getvsorcdata", )
-    //r.HandleFunc("/getcontrollerdata", )
-    //r.HandleFunc("/resetflows", )
-    //r.HandleFunc("/listswitch", )
-    //r.HandleFunc("/status", )
-    //r.HandleFunc("/tablestatus", )
-    //r.HandleFunc("/portsdesc", )
-    //r.HandleFunc("/portsstat", )
-    //r.HandleFunc("/startcontroller", )
-    //r.HandleFunc("/startcontrollerrouter", )
-    //r.HandleFunc("/stopcontroller", )
-    //r.HandleFunc("/sendcommand", )
-    //r.HandleFunc("/cancel", )
-    //r.HandleFunc("/startvsorc", )
-    //r.HandleFunc("/stopvsorc", )
-    http.Handle("/", r)
-    http.ListenAndServe(":8000", nil)
+//Creating subrouters:
+    //healthRouter check on the health of nodes or main server
+    healthRouter := chi.NewRouter()
+    //controllerRouter Agnostic openVswitch controller bridge
+    controllerRouter := chi.NewRouter()
+    //managementRouter Start, stop, monitoring of the core (mininet)
+    managementRouter := chi.NewRouter()
+    //mininetApiRouter Interface with the virtual environment inside the core (mininet)
+    mininetApiRouter := chi.NewRouter()
+    //might want to check https://go-chi.io/#/pages/routing?id=routing-groups
+    //in order to make groups where you have other middleware like authentication
 
+//////////////////////////////////possible routing/////////////////////////////
+    //r.Connect(pattern string, h http.HandlerFunc)
+    //r.Delete(pattern string, h http.HandlerFunc)
+    //r.Get(pattern string, h http.HandlerFunc)
+    //r.Head(pattern string, h http.HandlerFunc)
+    //r.Options(pattern string, h http.HandlerFunc)
+    //r.Patch(pattern string, h http.HandlerFunc)
+    //r.Post(pattern string, h http.HandlerFunc)
+    //r.Put(pattern string, h http.HandlerFunc)
+    //r.Trace(pattern string, h http.HandlerFunc)
+///////////////////////////////////////////////////////////////////////////////
 
+    //r.Get("/", )
+    //r.Get("/access", )
+    //r.Get("/stats", )
+    //r.Get("/topology", )
+    //r.Get("/health", )
+    //r.Get("/free", )//probably do this with server side or sockets
+    //r.Get("/flowdel", )//this is an external request
+    //r.Get("/mpstat", )
+    //r.Get("/ifstat", )
+    //r.Get("/showtemp", )
+    //r.Get("/gettopo", )
+    //r.Get("/net", )
+    //r.Get("/rpiping", )//workerping
+    //r.Get("/nodes", )
+    //r.Get("/statusnodes", )
+    //r.Get("/intfs", )
+    //r.Get("/iperf", )
+    //r.Get("/pingall", )
+    //r.Get("/placement", )
+    //r.Get("/getvsorcdata", )
+    //r.Get("/getcontrollerdata", )
+    //r.Get("/resetflows", )
+    //r.Get("/listswitch", )
+    //r.Get("/status", )
+    //r.Get("/tablestatus", )
+    //r.Get("/portsdesc", )
+    //r.Get("/portsstat", )
+    //r.Get("/startcontroller", )
+    //r.Get("/startcontrollerrouter", )
+    //r.Get("/stopcontroller", )
+    //r.Get("/sendcommand", )
+    //r.Get("/cancel", )
+    //r.Get("/startvsorc", )
+    //r.Get("/stopvsorc", )
+    //http.Handle("/", r)
 
+//Mounting all of the subrouters:
+    r.Mount("/health", healthRouter)
+    r.Mount("/controller", controllerRouter)
+    r.Mount("/management", managementRouter)
+    r.Mount("/virtualAPI", mininetApiRouter)
+
+//staring up the server
+    http.ListenAndServe(":8000", r)
 }
 
+
+
+
+
+
+
+
+
+//genericHandler404 is the universal 404 response of this front end
+func genericHandler404(w http.ResponseWriter, r *http.Request){
+    w.WriteHeader(404)
+    w.Write([]byte("route does not exist"))
+}
+//genericHandler405 is the universal 405 response of this front end
+func genericHandler405(w http.ResponseWriter, r *http.Request){
+    w.WriteHeader(405)
+    w.Write([]byte("Method not valid"))
+}
 func exampleHandler(w http.ResponseWriter, r *http.Request) {
-    vars := mux.Vars(r)
+    var1 := chi.URLParam(r, "first")
+    var2 := chi.URLParam(r, "second")
     w.WriteHeader(http.StatusOK)
-    fmt.Fprintf(w, "First: %v\nSecond: %v", vars["first"], vars["second"])
+    fmt.Fprintf(w, "First: %v\nSecond: %v", var1, var2)
 }
