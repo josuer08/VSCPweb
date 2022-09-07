@@ -9,27 +9,44 @@ import (
 )
 
 func main() {
+//create a new server and mount the handlers:
+    s := CreateNewServer()
+    s.MountHandlers()
+//staring up the server:
+    http.ListenAndServe(":8000", s.Router)
+}
 
+
+type server struct {
+    Router *chi.Mux
+    //suggestion to add config settings or DB in here
+}
+
+func CreateNewServer() *server {
+    s := &server{}
+    s.Router = chi.NewRouter()
+    return s
+}
+
+func (s *server) MountHandlers() {
 
 //Creation of the router:
-    //r main router for VSCP web application
-    r := chi.NewRouter()
     //logging enables as a middleware
-    r.Use(middleware.Logger)
-    //a middleware to check if the server is alive
-    r.Use(middleware.Heartbeat("/ping"))
-    //a profiler to check healt of server
-    r.Mount("/debug", middleware.Profiler())
+    s.Router.Use(middleware.Logger)
     //recover from panics and send a 500 internal error
-    r.Use(middleware.Recoverer)
+    s.Router.Use(middleware.Recoverer)
+    //a middleware to check if the server is alive
+    s.Router.Use(middleware.Heartbeat("/ping"))
+    //a profiler to check healt of server
+    s.Router.Mount("/debug", middleware.Profiler())
     //personalized 404
-    r.NotFound(genericHandler404)
+    s.Router.NotFound(GenericHandler404)
     //personalized 405
-    r.MethodNotAllowed(genericHandler405)
+    s.Router.MethodNotAllowed(GenericHandler405)
 
 //example:
     //example of a get function and its handler
-    r.Get("/example/{first}/{second:[0-9]+}", exampleHandler)
+    s.Router.Get("/example/{first}/{second:[0-9]+}", ExampleHandler)
 
 //Creating subrouters:
     //healthRouter check on the health of nodes or main server
@@ -44,82 +61,74 @@ func main() {
     //in order to make groups where you have other middleware like authentication
 
 //////////////////////////////////possible routing/////////////////////////////
-    //r.Connect(pattern string, h http.HandlerFunc)
-    //r.Delete(pattern string, h http.HandlerFunc)
-    //r.Get(pattern string, h http.HandlerFunc)
-    //r.Head(pattern string, h http.HandlerFunc)
-    //r.Options(pattern string, h http.HandlerFunc)
-    //r.Patch(pattern string, h http.HandlerFunc)
-    //r.Post(pattern string, h http.HandlerFunc)
-    //r.Put(pattern string, h http.HandlerFunc)
-    //r.Trace(pattern string, h http.HandlerFunc)
+    //s.Router.Connect(pattern string, h http.HandlerFunc)
+    //s.Router.Delete(pattern string, h http.HandlerFunc)
+    //s.Router.Get(pattern string, h http.HandlerFunc)
+    //s.Router.Head(pattern string, h http.HandlerFunc)
+    //s.Router.Options(pattern string, h http.HandlerFunc)
+    //s.Router.Patch(pattern string, h http.HandlerFunc)
+    //s.Router.Post(pattern string, h http.HandlerFunc)
+    //s.Router.Put(pattern string, h http.HandlerFunc)
+    //s.Router.Trace(pattern string, h http.HandlerFunc)
 ///////////////////////////////////////////////////////////////////////////////
 
-    //r.Get("/", )
-    //r.Get("/access", )
-    //r.Get("/stats", )
-    //r.Get("/topology", )
-    //r.Get("/health", )
-    //r.Get("/free", )//probably do this with server side or sockets
-    //r.Get("/flowdel", )//this is an external request
-    //r.Get("/mpstat", )
-    //r.Get("/ifstat", )
-    //r.Get("/showtemp", )
-    //r.Get("/gettopo", )
-    //r.Get("/net", )
-    //r.Get("/rpiping", )//workerping
-    //r.Get("/nodes", )
-    //r.Get("/statusnodes", )
-    //r.Get("/intfs", )
-    //r.Get("/iperf", )
-    //r.Get("/pingall", )
-    //r.Get("/placement", )
-    //r.Get("/getvsorcdata", )
-    //r.Get("/getcontrollerdata", )
-    //r.Get("/resetflows", )
-    //r.Get("/listswitch", )
-    //r.Get("/status", )
-    //r.Get("/tablestatus", )
-    //r.Get("/portsdesc", )
-    //r.Get("/portsstat", )
-    //r.Get("/startcontroller", )
-    //r.Get("/startcontrollerrouter", )
-    //r.Get("/stopcontroller", )
-    //r.Get("/sendcommand", )
-    //r.Get("/cancel", )
-    //r.Get("/startvsorc", )
-    //r.Get("/stopvsorc", )
+    //s.Router.Get("/", )
+    //s.Router.Get("/access", )
+    //s.Router.Get("/stats", )
+    //s.Router.Get("/topology", )
+    //s.Router.Get("/health", )
+    //s.Router.Get("/free", )//probably do this with server side or sockets
+    //s.Router.Get("/flowdel", )//this is an external request
+    //s.Router.Get("/mpstat", )
+    //s.Router.Get("/ifstat", )
+    //s.Router.Get("/showtemp", )
+    //s.Router.Get("/gettopo", )
+    //s.Router.Get("/net", )
+    //s.Router.Get("/rpiping", )//workerping
+    //s.Router.Get("/nodes", )
+    //s.Router.Get("/statusnodes", )
+    //s.Router.Get("/intfs", )
+    //s.Router.Get("/iperf", )
+    //s.Router.Get("/pingall", )
+    //s.Router.Get("/placement", )
+    //s.Router.Get("/getvsorcdata", )
+    //s.Router.Get("/getcontrollerdata", )
+    //s.Router.Get("/resetflows", )
+    //s.Router.Get("/listswitch", )
+    //s.Router.Get("/status", )
+    //s.Router.Get("/tablestatus", )
+    //s.Router.Get("/portsdesc", )
+    //s.Router.Get("/portsstat", )
+    //s.Router.Get("/startcontroller", )
+    //s.Router.Get("/startcontrollerrouter", )
+    //s.Router.Get("/stopcontroller", )
+    //s.Router.Get("/sendcommand", )
+    //s.Router.Get("/cancel", )
+    //s.Router.Get("/startvsorc", )
+    //s.Router.Get("/stopvsorc", )
     //http.Handle("/", r)
 
 //Mounting all of the subrouters:
-    r.Mount("/health", healthRouter)
-    r.Mount("/controller", controllerRouter)
-    r.Mount("/management", managementRouter)
-    r.Mount("/virtualAPI", mininetApiRouter)
+    s.Router.Mount("/health", healthRouter)
+    s.Router.Mount("/controller", controllerRouter)
+    s.Router.Mount("/management", managementRouter)
+    s.Router.Mount("/virtualAPI", mininetApiRouter)
 
-//staring up the server
-    http.ListenAndServe(":8000", r)
 }
 
 
 
-
-
-
-
-
-
-//genericHandler404 is the universal 404 response of this front end
-func genericHandler404(w http.ResponseWriter, r *http.Request){
+//GenericHandler404 is the universal 404 response of this front end
+func GenericHandler404(w http.ResponseWriter, r *http.Request){
     w.WriteHeader(404)
     w.Write([]byte("route does not exist"))
 }
-//genericHandler405 is the universal 405 response of this front end
-func genericHandler405(w http.ResponseWriter, r *http.Request){
+//GenericHandler405 is the universal 405 response of this front end
+func GenericHandler405(w http.ResponseWriter, r *http.Request){
     w.WriteHeader(405)
     w.Write([]byte("Method not valid"))
 }
-func exampleHandler(w http.ResponseWriter, r *http.Request) {
+func ExampleHandler(w http.ResponseWriter, r *http.Request) {
     var1 := chi.URLParam(r, "first")
     var2 := chi.URLParam(r, "second")
     w.WriteHeader(http.StatusOK)
