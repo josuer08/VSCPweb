@@ -72,40 +72,41 @@ func (s *server) MountHandlers() {
     //s.Router.Trace(pattern string, h http.HandlerFunc)
 ///////////////////////////////////////////////////////////////////////////////
 
+//generic ryu version at first...
     //s.Router.Get("/", )
     //s.Router.Get("/access", )
     //s.Router.Get("/stats", )
     //s.Router.Get("/topology", )
-    //s.Router.Get("/health", )
-    //s.Router.Get("/free", )//probably do this with server side or sockets
-    //s.Router.Get("/flowdel", )//this is an external request
-    //s.Router.Get("/mpstat", )
-    //s.Router.Get("/ifstat", )
-    //s.Router.Get("/showtemp", )
-    //s.Router.Get("/gettopo", )
-    //s.Router.Get("/net", )
-    //s.Router.Get("/rpiping", )//workerping
-    //s.Router.Get("/nodes", )
-    //s.Router.Get("/statusnodes", )
-    //s.Router.Get("/intfs", )
-    //s.Router.Get("/iperf", )
-    //s.Router.Get("/pingall", )
-    //s.Router.Get("/placement", )
-    //s.Router.Get("/getvsorcdata", )
-    //s.Router.Get("/getcontrollerdata", )
-    //s.Router.Get("/resetflows", )
-    //s.Router.Get("/listswitch", )
-    //s.Router.Get("/status", )
-    //s.Router.Get("/tablestatus", )
-    //s.Router.Get("/portsdesc", )
-    //s.Router.Get("/portsstat", )
-    //s.Router.Get("/startcontroller", )
-    //s.Router.Get("/startcontrollerrouter", )
-    //s.Router.Get("/stopcontroller", )
-    //s.Router.Get("/sendcommand", )
-    //s.Router.Get("/cancel", )
-    //s.Router.Get("/startvsorc", )
-    //s.Router.Get("/stopvsorc", )
+    //s.Router.Get("/mpstat", )//DEPRECATED see: /masterHealth
+    //s.Router.Get("/ifstat", )//DEPRECATED see: /masterHealth
+    //s.Router.Get("/showtemp", )//DEPRECATED see: /masterHealth
+    //healthRouter.Get("/", )//this renders the health page "/health"
+    //healthRouter.Get("/masterHealth", )//return a JSON with healt of the master "/free"
+    //controllerRouter.Delete("/flow", )//this is an external request "/flowdel"
+    //controllerRouter.Get("/topology", )// "/gettopo"
+    //mininetApiRouter.Get("/net", )
+    //healthRouter.Get("/ping", )// "/rpiping"
+    //mininetApiRouter.Get("/nodes", )
+    //mininetApiRouter.Get("/status", )// "/statusnodes"
+    //mininetApiRouter.Get("/intfs", )
+    //mininetApiRouter.Get("/iperf", )
+    //mininetApiRouter.Get("/pingall", )
+    //mininetApiRouter.Get("/placement", )
+    //managementRouter.Get("/vscpData", )// "/getvsorcdata"
+    //managementRouter.Get("/controllerData", ) // "/getcontrollerdata"
+    //controllerRouter.Get("/resetflows", )//not sure if here or managementRouter
+    //controllerRouter.Get("/listswitch", )
+    //controllerRouter.Get("/status", )
+    //controllerRouter.Get("/tablestatus", )
+    //controllerRouter.Get("/portDescription", )// "/portsdesc"
+    //controllerRouter.Get("/portStatus", )// "/portsstat"
+    //managementRouter.Get("/startController", )// "/startcontroller"
+    //managementRouter.Get("/startcontrollerAPI", )// "/startcontrollerrouter"
+    //managementRouter.Get("/stopController", )// "/stopcontroller"
+    //mininetApiRouter.Get("/sendCommand", )// "/sendcommand"
+    //managementRouter.Get("/cancel", )// "/cancel"
+    //managementRouter.Get("/startVsorc", )// "/startvsorc"
+    //managementRouter.Get("/stopVsorc", )// "/stopvsorc"
     //http.Handle("/", r)
 
 //Mounting all of the subrouters:
