@@ -8,15 +8,16 @@ import (
 	"net/http"
 
 	hh "healthHandlers"
+	mh "managementHandlers"
+	vh "virtualAPIHandlers"
+	ch "controllerHandlers"
+	sh "staticHandlers"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-// mh "managementHandlers"
-// sh "staticHandlers"
-// vh "virtualAPIHandlers"
-// ch "controllerHandlers"
+
 func main() {
 	//create a new server and mount the handlers:
 	s := CreateNewServer()
