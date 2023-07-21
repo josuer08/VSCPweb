@@ -13,6 +13,7 @@ import (
 // the special agent that each of them will already have installed in order to
 // connect to the cluster.
 func MasterHealthHandler(w http.ResponseWriter, r *http.Request) {
-            fmt.Fprintf("Ëverything should be okay my boi")
+        w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "Ëverything should be okay my boi")
 }
 

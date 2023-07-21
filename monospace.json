@@ -1,0 +1,9 @@
+{
+    "previews": [
+      {
+        "command": ["go","run","vscpweb.go"],
+        "id": "web",
+        "manager": "web"
+      }
+    ]
+  }

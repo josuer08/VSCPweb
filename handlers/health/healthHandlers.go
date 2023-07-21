@@ -19,4 +19,5 @@ import (
 func MasterHealthHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Ëverything should be okay my boi")
+	fmt.Println("health handler")
 }

@@ -1,17 +1,17 @@
 // This is a system for playing with SDN based openvswitches using a simple web
 // interface. This project will be combined with a CLI version or probably just
 // made compatible with a core version in the future.
-package vscpweb
+package main
 
 import (
 	"fmt"
 	"net/http"
 
 	hh "healthHandlers"
-	mh "managementHandlers"
-	vh "virtualAPIHandlers"
-	ch "controllerHandlers"
-	sh "staticHandlers"
+	//mh "managementHandlers"
+	//vh "virtualAPIHandlers"
+	//ch "controllerHandlers"
+	//sh "staticHandlers"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -92,6 +92,7 @@ func (s *server) MountHandlers() {
 	//healthRouter.Get("/", )//this renders the health page "/health"
 	//healthRouter.Get("/ping", )// "/rpiping"
 	healthRouter.Get("/masterHealth", hh.MasterHealthHandler) //return a JSON with healt of the master "/free"
+	healthRouter.Get("/", hh.MasterHealthHandler) //return a JSON with healt of the master "/free"
 	//controllerRouter.Delete("/flow", )//this is an external request "/flowdel"
 	//controllerRouter.Get("/resetflows", )//not sure if here or managementRouter
 	//controllerRouter.Get("/listswitch", )
