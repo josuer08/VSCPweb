@@ -23,7 +23,7 @@ func main() {
 	s := CreateNewServer()
 	s.MountHandlers()
 	//staring up the server:
-	http.ListenAndServe(":8000", s.Router)
+	http.ListenAndServe(":8001", s.Router)
 }
 
 type server struct {
