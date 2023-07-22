@@ -5,6 +5,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 
 	hh "healthHandlers"
@@ -17,11 +18,15 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-
 func main() {
 	//create a new server and mount the handlers:
 	s := CreateNewServer()
 	s.MountHandlers()
+
+	//Handle the static files
+	fs := http.FileServer(http.Dir("./static/"))
+	s.Router.Handle("/static/*", http.StripPrefix("/static/", fs))
+
 	//staring up the server:
 	http.ListenAndServe(":8001", s.Router)
 }
@@ -56,6 +61,7 @@ func (s *server) MountHandlers() {
 	//example:
 	//example of a get function and its handler
 	s.Router.Get("/example/{first}/{second:[0-9]+}", ExampleHandler)
+	s.Router.Get("/", indexHandler)
 
 	//Creating subrouters:
 	//healthRouter check on the health of nodes or main server
@@ -92,7 +98,6 @@ func (s *server) MountHandlers() {
 	//healthRouter.Get("/", )//this renders the health page "/health"
 	//healthRouter.Get("/ping", )// "/rpiping"
 	healthRouter.Get("/masterHealth", hh.MasterHealthHandler) //return a JSON with healt of the master "/free"
-	healthRouter.Get("/", hh.MasterHealthHandler) //return a JSON with healt of the master "/free"
 	//controllerRouter.Delete("/flow", )//this is an external request "/flowdel"
 	//controllerRouter.Get("/resetflows", )//not sure if here or managementRouter
 	//controllerRouter.Get("/listswitch", )
@@ -143,4 +148,12 @@ func ExampleHandler(w http.ResponseWriter, r *http.Request) {
 	var2 := chi.URLParam(r, "second")
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "First: %v\nSecond: %v", var1, var2)
+}
+
+func indexHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	passarg := "some passing argument"
+	indexTemplate := template.Must(template.ParseFiles("templates/views/index.html"))
+	indexTemplate.Execute(w, passarg)
+
 }
