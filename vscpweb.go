@@ -154,6 +154,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	passarg := "some passing argument"
 	indexTemplate := template.Must(template.ParseFiles("templates/views/index.html"))
+    //check for go partial templates so you can extract blocks you want to use
 	indexTemplate.Execute(w, passarg)
 
 }
