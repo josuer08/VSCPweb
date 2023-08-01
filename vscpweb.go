@@ -4,9 +4,12 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"html/template"
+	"math/rand"
 	"net/http"
+	"strconv"
 
 	hh "healthHandlers"
 	//mh "managementHandlers"
@@ -28,7 +31,12 @@ func main() {
 	s.Router.Handle("/static/*", http.StripPrefix("/static/", fs))
 
 	//staring up the server:
-	http.ListenAndServe(":8001", s.Router)
+	port := flag.Int("port", 8001, "Port in which the server will be started")
+	flag.Parse()
+	setPort := strconv.Itoa(*port)
+	setPort = ":"+setPort
+
+	http.ListenAndServe(setPort , s.Router)
 }
 
 type server struct {
@@ -134,8 +142,11 @@ func (s *server) MountHandlers() {
 
 // GenericHandler404 is the universal 404 response of this front end
 func GenericHandler404(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(404)
-	w.Write([]byte("route does not exist"))
+	
+w.WriteHeader(404)
+	messages := []string{"route does not exist", "page not found", "resource not found"}
+	randomIndex := rand.Intn(len(messages))
+	w.Write([]byte(messages[randomIndex]))
 }
 
 // GenericHandler405 is the universal 405 response of this front end

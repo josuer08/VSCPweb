@@ -1,7 +1,7 @@
 {
     "previews": [
       {
-        "command": ["./getter.sh;","go","run","vscpweb.go"],
+        "command": ["go","run","vscpweb.go", "--port", "$PORT"],
         "id": "web",
         "manager": "web"
       }

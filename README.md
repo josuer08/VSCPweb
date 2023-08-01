@@ -1,3 +1,4 @@
+
 ## VSCPweb
 
 VSCPweb is a web based software defined networking playground that uses openvswitches (OVS) and a modified version of [mininet](https://github.com/mininet/mininet).
@@ -7,7 +8,8 @@ It is a tool that allows you to:
 + Use linux namespace based lightweight containers as hosts or servers in the network
 + Monitor the health of all of the worker servers
 + Have CLI access to all of the hosts of the virtual network
-+ Have CLI access to mininet
++ Have CLI acc
+ess to mininet
 
 ## Table of Contents
 
@@ -21,7 +23,7 @@ It is a tool that allows you to:
 
 VSCPweb is a web based network simulator that can be used to learn about and experiment with different network topologies and configurations. It is a valuable tool for anyone who wants to learn more about networking or who needs to test out new network configurations.
 
-VSCPweb is made with golang and htmx. It uses openvswitches as the underlying network virtualization layer. This allows VSCPweb to create realistic and scalable network simulations.
+VSCPweb is made with golang and htmx. It uses` openvswitches as the underlying network virtualization layer. This allows VSCPweb to create realistic and scalable network simulations.
 
 ## Installation
 
@@ -70,4 +72,11 @@ See the LICENSE file for more information.
 
 ## Contact
 
-If you have any questions or concerns, please contact leave an issue on GitHub.
+
+## Contact
+
+If you have any questions or concerns, please feel free to contact us by email at [email protected] or by opening an issue on GitHub.
+
+We are always happy to help and we will get back to you as soon as possible.
+
+Thank you for using VSCPweb!
