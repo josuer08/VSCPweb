@@ -33,14 +33,15 @@ func main() {
 	//staring up the server:
 	port := flag.Int("port", 8001, "Port in which the server will be started")
 	flag.Parse()
-	setPort := strconv.Itoa(*port)
-	setPort = ":" + setPort
+	s.port = strconv.Itoa(*port)
+	s.port = ":" + s.port
 
-	http.ListenAndServe(setPort, s.Router)
+	s.startUp()
 }
 
 type server struct {
 	Router *chi.Mux
+    port string
 	//suggestion to add config settings or DB in here
 }
 
@@ -48,6 +49,12 @@ func CreateNewServer() *server {
 	s := &server{}
 	s.Router = chi.NewRouter()
 	return s
+}
+
+//startUp is the function for the server to start listening
+func (s *server) startUp() {
+    //TODO(josuer08) add other things needed at startup
+    http.ListenAndServe(s.port,s.Router)
 }
 
 func (s *server) MountHandlers() {
@@ -69,7 +76,7 @@ func (s *server) MountHandlers() {
 	//example:
 	//example of a get function and its handler
 	s.Router.Get("/example/{first}/{second:[0-9]+}", ExampleHandler)
-	s.Router.Get("/", indexHandler)
+	//s.Router.Get("/", indexHandler)
 
 	//Creating subrouters:
 	//healthRouter check on the health of nodes or main server
@@ -96,10 +103,10 @@ func (s *server) MountHandlers() {
 	///////////////////////////////////////////////////////////////////////////////
 
 	//generic ryu version at first...
-	//s.Router.Get("/", )
-	//s.Router.Get("/access", )
-	//s.Router.Get("/stats", )
-	//s.Router.Get("/topology", )
+	s.Router.Get("/", indexHandler)
+	s.Router.Get("/access", accessHandler)
+	s.Router.Get("/stats",  statsHandler)
+	s.Router.Get("/topology", topologyHandler)
 	//s.Router.Get("/mpstat", )//DEPRECATED see: /masterHealth
 	//s.Router.Get("/ifstat", )//DEPRECATED see: /masterHealth
 	//s.Router.Get("/showtemp", )//DEPRECATED see: /masterHealth
@@ -161,11 +168,32 @@ func ExampleHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "First: %v\nSecond: %v", var1, var2)
 }
 
+/////////THIS BLOCK LOOKS LIKE IT IS NOT DRY BUT IT IS BECAUSE IT WILL LATER
+//DIFFER WIDELY FROM ONE FUNCTION TO THE NEXT
+////////////////////////////////////////////////////////////////////////////////
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
 	passarg := "some passing argument done"
-	indexTemplate := template.Must(template.ParseFiles("templates/views/index.html"))
+    viewsHandlerHelper(w, r, "templates/views/index.html", passarg)
+}
+func accessHandler(w http.ResponseWriter, r *http.Request) {
+	passarg := "some passing argument done"
+    viewsHandlerHelper(w, r, "templates/views/handler.html", passarg)
+}
+func statsHandler(w http.ResponseWriter, r *http.Request) {
+	passarg := "some passing argument done"
+    viewsHandlerHelper(w, r, "templates/views/stats.html", passarg)
+}
+func topologyHandler(w http.ResponseWriter, r *http.Request) {
+	passarg := "some passing argument done"
+    viewsHandlerHelper(w, r, "templates/views/topology.html", passarg)
+}
+////////////////////////////////////////////////////////////////////////////////
+
+func viewsHandlerHelper(w http.ResponseWriter, r *http.Request, file string, argument any) {
+	w.WriteHeader(http.StatusOK)
+
+	indexTemplate := template.Must(template.ParseFiles(file))
 	//check for go partial templates so you can extract blocks you want to use
-	indexTemplate.Execute(w, passarg)
+	indexTemplate.Execute(w, argument)
 
 }
