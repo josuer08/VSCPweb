@@ -34,9 +34,9 @@ func main() {
 	port := flag.Int("port", 8001, "Port in which the server will be started")
 	flag.Parse()
 	setPort := strconv.Itoa(*port)
-	setPort = ":"+setPort
+	setPort = ":" + setPort
 
-	http.ListenAndServe(setPort , s.Router)
+	http.ListenAndServe(setPort, s.Router)
 }
 
 type server struct {
@@ -142,8 +142,8 @@ func (s *server) MountHandlers() {
 
 // GenericHandler404 is the universal 404 response of this front end
 func GenericHandler404(w http.ResponseWriter, r *http.Request) {
-	
-w.WriteHeader(404)
+
+	w.WriteHeader(404)
 	messages := []string{"route does not exist", "page not found", "resource not found"}
 	randomIndex := rand.Intn(len(messages))
 	w.Write([]byte(messages[randomIndex]))
@@ -163,9 +163,9 @@ func ExampleHandler(w http.ResponseWriter, r *http.Request) {
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	passarg := "some passing argument"
+	passarg := "some passing argument done"
 	indexTemplate := template.Must(template.ParseFiles("templates/views/index.html"))
-    //check for go partial templates so you can extract blocks you want to use
+	//check for go partial templates so you can extract blocks you want to use
 	indexTemplate.Execute(w, passarg)
 
 }
